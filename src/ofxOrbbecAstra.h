@@ -22,6 +22,8 @@ public:
     //"device/sensor1", etc. Otherwise, leave blank.
     void setup(const char* ASTRA_DEVICE_URI = "device/default");
     
+    string camName;
+    
 	void enableDepthImage(bool enable);
 	void enableRegistration(bool useRegistration);
 	void setDepthClipping(unsigned short near, unsigned short far);
@@ -34,6 +36,8 @@ public:
 
 	void update();
 	bool isFrameNew();
+    
+    int frameNum = 0;
 
 	void draw(float x = 0, float y = 0, float w = 0, float h = 0);
 	void drawDepth(float x = 0, float y = 0, float w = 0, float h = 0);
@@ -44,6 +48,7 @@ public:
 	unsigned short getFarClip();
 
 	ofShortPixels& getRawDepth();
+    ofPixels& getDepthPixels();
 	ofImage& getDepthImage();
 	ofImage& getColorImage();
 

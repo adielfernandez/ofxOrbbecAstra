@@ -30,6 +30,8 @@ void ofxOrbbecAstra::setup(const char* ASTRA_DEVICE_URI){
 	cachedCoords.resize(width * height);
 	updateDepthLookupTable();
 
+    camName = ASTRA_DEVICE_URI;
+    
 	astra::initialize();
 
 	streamset = astra::StreamSet(ASTRA_DEVICE_URI);
@@ -123,7 +125,12 @@ void ofxOrbbecAstra::initVideoGrabber(int deviceID) {
 void ofxOrbbecAstra::update(){
 	// See on_frame_ready() for more processing
 	bIsFrameNew = false;
-	astra_temp_update();
+    
+    if(camName == "device/sensor0"){
+        astra_temp_update();
+        cout << "[ofxOrbbecAstra::update()] astra_temp_update() called from " << camName << " instance" << endl;
+    }
+    
 
 	if (bUseVideoGrabber && grabber) {
 		grabber->update();
@@ -154,7 +161,12 @@ bool ofxOrbbecAstra::isFrameNew() {
 void ofxOrbbecAstra::on_frame_ready(astra::StreamReader& reader,
 									astra::Frame& frame)
 {
+    
+    frameNum++;
+    cout << "[ofxOrbbecAstra::on_frame_ready()] " << camName << " Frames received: " << frameNum << endl;
+    
 	bIsFrameNew = true;
+    
 
 	auto colorFrame = frame.get<astra::ColorFrame>();
 	auto depthFrame = frame.get<astra::DepthFrame>();
@@ -176,7 +188,7 @@ void ofxOrbbecAstra::on_frame_ready(astra::StreamReader& reader,
 				float val = depthLookupTable[depth];
 				depthImage.setColor(i, ofColor(val));
 			}
-			depthImage.update();
+            depthImage.update();
 		}
 	}
 
@@ -239,6 +251,10 @@ ofShortPixels& ofxOrbbecAstra::getRawDepth() {
 
 ofImage& ofxOrbbecAstra::getDepthImage() {
 	return depthImage;
+}
+
+ofPixels& ofxOrbbecAstra::getDepthPixels() {
+    return depthImage.getPixels();
 }
 
 ofImage& ofxOrbbecAstra::getColorImage() {
